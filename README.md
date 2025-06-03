@@ -1,5 +1,7 @@
 # MuZero
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Environment Setup
 
 This project supports both conda and venv. Choose your preferred method:
