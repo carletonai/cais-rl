@@ -1,5 +1,7 @@
 # MuZero
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Environment Setup
 
 This project supports both conda and venv. Choose your preferred method:
@@ -47,6 +49,28 @@ source venv/bin/activate
 3. Verify the installation:
 ```bash
 python --version
+```
+
+## Development Workflow
+
+### Code Formatting
+Before committing your changes, run:
+
+```bash
+./scripts/format.sh
+```
+
+This script will:
+- Clean up unused imports
+- Sort imports
+- Format code according to our style guide
+- Run tests to verify changes
+
+### Running Tests
+To run the test suite only:
+
+```bash
+pytest
 ```
 
 ## Environment Management
