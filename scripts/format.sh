@@ -2,6 +2,12 @@
 
 set -e
 
+# Ensure the muzero package is installed in editable mode
+if ! pip show muzero | grep -q 'Location: '; then
+  echo "Installing muzero in editable mode..."
+  pip install -e .
+fi
+
 echo "Running code formatting and quality checks..."
 
 if ! command -v black &> /dev/null; then
@@ -27,6 +33,11 @@ fi
 if ! command -v mypy &> /dev/null; then
     echo "Installing mypy..."
     pip install mypy
+fi
+
+if ! command -v pytest &> /dev/null; then
+    echo "Installing pytest..."
+    pip install pytest pytest-cov
 fi
 
 echo "Cleaning up imports..."
