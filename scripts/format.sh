@@ -41,13 +41,13 @@ if ! command -v pytest &> /dev/null; then
 fi
 
 echo "Cleaning up imports..."
-autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables muzero/
+autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables muzero/ tests/
 
 echo "Sorting imports..."
-isort muzero/
+isort muzero/ tests/ setup.py
 
 echo "Formatting code with black..."
-black muzero/
+black muzero/ tests/ setup.py
 
 echo "Running type checks..."
 mypy muzero/
