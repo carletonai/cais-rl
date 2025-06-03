@@ -34,7 +34,6 @@ We use several tools to maintain consistent code style:
 - [autoflake](https://github.com/PyCQA/autoflake) for cleaning up imports
 - [pylint](https://www.pylint.org/) for code quality
 - [mypy](https://mypy.readthedocs.io/) for type checking
-- [flake8](https://flake8.pycqa.org/) for style checking
 
 The formatting script (`scripts/format.sh`) will automatically apply most of these tools. For manual checks:
 
@@ -48,8 +47,7 @@ isort .
 # Check types
 mypy .
 
-# Run linters
-flake8 .
+# Run linter
 pylint muzero/
 ```
 
