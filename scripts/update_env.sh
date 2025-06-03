@@ -6,7 +6,7 @@ if [ -z "$VIRTUAL_ENV" ] && [ -z "$CONDA_PREFIX" ]; then
 fi
 
 echo "Updating requirements.txt ... "
-pip freeze > requirements.txt
+pip freeze | grep -v "^-e git" > requirements.txt
 
 echo "Updating environment.yml ... "
 cat > environment.yml << EOL
