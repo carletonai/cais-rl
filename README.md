@@ -24,9 +24,9 @@ conda env create -f environment.yml
 conda activate muzero
 ```
 
-3. Verify the installation:
+3. Install the package and dependencies:
 ```bash
-python --version
+make install
 ```
 
 ### Option 2: Using venv
@@ -46,31 +46,53 @@ source venv/bin/activate
 .\venv\Scripts\activate
 ```
 
-3. Verify the installation:
+3. Install the package and dependencies:
 ```bash
-python --version
+make install
 ```
 
 ## Development Workflow
 
-### Code Formatting
-Before committing your changes, run:
+We provide several Makefile commands to help with development:
 
 ```bash
-./scripts/format.sh
+# Show all available commands
+make help
+
+# Format code and run quality checks
+make format
+
+# Run linting checks
+make lint
+
+# Run tests with coverage
+make test
+
+# Clean up cache files
+make clean
+
+# Update requirements.txt and environment.yml
+make update-env
 ```
 
-This script will:
+### Code Formatting
+Before committing your changes, run:
+```bash
+make format
+```
+
+This will:
 - Clean up unused imports
 - Sort imports
 - Format code according to our style guide
+- Run type checks
+- Run linting
 - Run tests to verify changes
 
 ### Running Tests
-To run the test suite only:
-
+To run the test suite with coverage:
 ```bash
-pytest
+make test
 ```
 
 ## Environment Management
@@ -106,9 +128,8 @@ rmdir /s /q venv  # On Windows
 ## Updating Environment Files
 
 After installing new packages, update both environment files:
-
 ```bash
-./update_env.sh
+make update-env
 ```
 
 This will:

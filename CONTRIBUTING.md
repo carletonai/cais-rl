@@ -12,14 +12,16 @@ We love your input! We want to make contributing to CAIS MuZero as easy and tran
 
 1. Fork the repo and create your branch from `main`
 2. Make your changes
-3. Run the formatting script:
+3. Run the formatting and quality checks:
    ```bash
-   ./scripts/format.sh
+   make format
    ```
    This will:
    - Clean up unused imports
    - Sort imports
    - Format code according to our style guide
+   - Run type checks
+   - Run linting
    - Run tests to verify changes
 4. If tests pass, commit your changes
 5. Push to your fork
@@ -35,27 +37,25 @@ We use several tools to maintain consistent code style:
 - [pylint](https://www.pylint.org/) for code quality
 - [mypy](https://mypy.readthedocs.io/) for type checking
 
-The formatting script (`scripts/format.sh`) will automatically apply most of these tools. For manual checks:
-
+You can run all checks at once using:
 ```bash
-# Format code
-black .
+make format
+```
 
-# Sort imports
-isort .
+Or run individual checks:
+```bash
+# Run linting checks
+make lint
 
-# Check types
-mypy .
-
-# Run linter
-pylint muzero/
+# Run tests with coverage
+make test
 ```
 
 ## Pull Request Process
 
 1. Update the README.md with details of changes if needed
-2. Ensure all tests pass
-3. Ensure code meets our style guidelines
+2. Ensure all tests pass (`make test`)
+3. Ensure code meets our style guidelines (`make format`)
 4. The PR will be merged once you have the sign-off of at least one other developer
 
 ## Report bugs using GitHub's [issue tracker](https://github.com/carletonai/muzero/issues)
