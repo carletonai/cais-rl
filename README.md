@@ -51,6 +51,28 @@ source venv/bin/activate
 python --version
 ```
 
+## Development Workflow
+
+### Code Formatting
+Before committing your changes, run:
+
+```bash
+./scripts/format.sh
+```
+
+This script will:
+- Clean up unused imports
+- Sort imports
+- Format code according to our style guide
+- Run tests to verify changes
+
+### Running Tests
+To run the test suite only:
+
+```bash
+pytest
+```
+
 ## Environment Management
 
 ### For Conda Users
