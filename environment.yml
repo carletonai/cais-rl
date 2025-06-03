@@ -15,6 +15,4 @@ dependencies:
     - pillow==11.2.1
     - sympy==1.14.0
     - torch==2.7.0
-    - torchaudio==2.7.0
-    - torchvision==0.22.0
     - typing_extensions==4.14.0
