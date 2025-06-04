@@ -288,6 +288,151 @@ void list_scripts(MT *mt) {
     }
 }
 
+char *get_script_description(MT *mt, const char *script_name) {
+    char help_file_path[MAX_PATH_LEN];
+    snprintf(help_file_path, sizeof(help_file_path), "%s/.mt/help.yml",
+             mt->repo_root);
+
+    FILE *file = fopen(help_file_path, "r");
+    if (!file) {
+        return NULL;
+    }
+
+    char line[512];
+    int in_scripts = 0;
+    static char description[512];
+
+    while (fgets(line, sizeof(line), file)) {
+        line[strcspn(line, "\n")] = 0;
+
+        if (strlen(line) == 0 || line[0] == '#') {
+            continue;
+        }
+
+        if (strstr(line, "scripts:")) {
+            in_scripts = 1;
+            continue;
+        }
+
+        if (in_scripts && line[0] == ' ') {
+            char *colon = strchr(line, ':');
+            if (!colon) continue;
+
+            char *name_start = line;
+            while (*name_start == ' ') name_start++;
+
+            int name_len = colon - name_start;
+            if (name_len <= 0) continue;
+
+            char script_key[MAX_NAME_LEN];
+            strncpy(script_key, name_start, name_len);
+            script_key[name_len] = '\0';
+
+            if (strcmp(script_key, script_name) == 0) {
+                char *desc_start = colon + 1;
+                while (*desc_start == ' ' || *desc_start == '"') desc_start++;
+
+                char *desc_end = desc_start + strlen(desc_start) - 1;
+                while (desc_end > desc_start &&
+                       (*desc_end == ' ' || *desc_end == '"'))
+                    desc_end--;
+                *(desc_end + 1) = '\0';
+
+                strncpy(description, desc_start, sizeof(description) - 1);
+                description[sizeof(description) - 1] = '\0';
+                fclose(file);
+                return description;
+            }
+        } else if (in_scripts && line[0] != ' ' && line[0] != '\t') {
+            break;
+        }
+    }
+
+    fclose(file);
+    return NULL;
+}
+
+void describe_scripts(MT *mt) {
+    char current_project[MAX_NAME_LEN];
+    char scripts_dir[MAX_PATH_LEN];
+    DIR *dir;
+    struct dirent *entry;
+    int found_any = 0;
+
+    printf("Available Scripts:\n");
+    printf("==================\n\n");
+
+    if (which_project(mt, current_project) == 0) {
+        printf("Project '%s' scripts:\n", current_project);
+
+        for (int i = 0; i < mt->project_count; i++) {
+            if (strcmp(mt->projects[i].name, current_project) == 0) {
+                char project_path[MAX_PATH_LEN];
+                snprintf(project_path, sizeof(project_path), "%s/%s",
+                         mt->repo_root, mt->projects[i].path);
+                snprintf(scripts_dir, sizeof(scripts_dir), "%s/.mt/scripts",
+                         project_path);
+
+                dir = opendir(scripts_dir);
+                if (dir) {
+                    while ((entry = readdir(dir)) != NULL) {
+                        if (entry->d_name[0] != '.') {
+                            char script_path[MAX_PATH_LEN];
+                            snprintf(script_path, sizeof(script_path), "%s/%s",
+                                     scripts_dir, entry->d_name);
+                            if (access(script_path, X_OK) == 0) {
+                                char *desc =
+                                    get_script_description(mt, entry->d_name);
+                                if (desc) {
+                                    printf("  %-15s %s\n", entry->d_name, desc);
+                                } else {
+                                    printf(
+                                        "  %-15s (no description available)\n",
+                                        entry->d_name);
+                                }
+                                found_any = 1;
+                            }
+                        }
+                    }
+                    closedir(dir);
+                }
+                break;
+            }
+        }
+        if (found_any) printf("\n");
+    }
+
+    printf("Root scripts:\n");
+    snprintf(scripts_dir, sizeof(scripts_dir), "%s/.mt/scripts", mt->repo_root);
+    dir = opendir(scripts_dir);
+    if (dir) {
+        while ((entry = readdir(dir)) != NULL) {
+            if (entry->d_name[0] != '.') {
+                char script_path[MAX_PATH_LEN];
+                snprintf(script_path, sizeof(script_path), "%s/%s", scripts_dir,
+                         entry->d_name);
+                if (access(script_path, X_OK) == 0) {
+                    char *desc = get_script_description(mt, entry->d_name);
+                    if (desc) {
+                        printf("  %-15s %s\n", entry->d_name, desc);
+                    } else {
+                        printf("  %-15s (no description available)\n",
+                               entry->d_name);
+                    }
+                    found_any = 1;
+                }
+            }
+        }
+        closedir(dir);
+    }
+
+    if (!found_any) {
+        printf("No executable scripts found.\n");
+    } else {
+        printf("\nRun 'mt <script>' to execute a script.\n");
+    }
+}
+
 int main(int argc, char *argv[]) {
     MT mt;
 
@@ -307,6 +452,12 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    // describe command to show script descriptions
+    if (strcmp(argv[1], "describe") == 0 || strcmp(argv[1], "desc") == 0) {
+        describe_scripts(&mt);
+        return 0;
+    }
+
     if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
         printf("mt - Multi-Tool for cais-rl\n");
         printf("Version: 0.0.1\n");
@@ -322,6 +473,7 @@ int main(int argc, char *argv[]) {
         printf("  mt <script>           Run a script\n");
         printf("  mt <script> [args]    Run a script with arguments\n");
         printf("  mt list               List available scripts\n");
+        printf("  mt describe           Show script descriptions\n");
         printf("  mt --version          Show version\n");
         printf("  mt help               Show this help\n\n");
         return 0;
