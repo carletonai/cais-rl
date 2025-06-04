@@ -120,6 +120,20 @@ int load_projects_config(MT *mt) {
     return mt->project_count > 0;
 }
 
+int mt_init(MT *mt) {
+    if (!find_repo_root(mt->repo_root)) {
+        fprintf(stderr, "Not in a git repository \n");
+        return 1;
+    }
+
+    if (!load_projects_config(mt)) {
+        fprintf(stderr, "Could not load projects config \n");
+        return 1;
+    }
+
+    return 0;
+}
+
 int which_project(MT *mt, char *project_name) {
     char cwd[MAX_PATH_LEN];
     if (!getcwd(cwd, sizeof(cwd))) {
