@@ -170,7 +170,6 @@ int find_and_run_script(MT *mt, const char *script_name, char **script_args,
                         int arg_count) {
     char current_project[MAX_NAME_LEN];
     char scripts_dir[MAX_PATH_LEN];
-    char script_path[MAX_PATH_LEN];
     char *found_script = NULL;
 
     // try to find the script in the current project
