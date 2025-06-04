@@ -78,3 +78,46 @@ int run_script(MT *mt, const char *script_name) {}
 int run_script(MT *mt, const char *script_name) {}
 
 int get_project_path(MT *mt, const char *project_name, char *project_path) {}
+
+int main(int argc, char *argv[]) {
+    MT mt;
+
+    if (!mt_init(&mt)) {
+        return 1;
+    }
+
+    // show scripts if no arguments
+    if (argc < 2) {
+        list_scripts(&mt);
+        return 0;
+    }
+
+    // list command to list scripts
+    if (strcmp(argv[1], "list") == 0 || strcmp(argv[1], "ls") == 0) {
+        list_scripts(&mt);
+        return 0;
+    }
+
+    // help command
+    if (strcmp(argv[1], "help") == 0 || strcmp(argv[1], "-h") == 0 ||
+        strcmp(argv[1], "--help") == 0) {
+        printf("mt - Multi-Tool for cais-rl\n\n");
+        printf("Usage: \n");
+        printf("  mt                    List available scripts\n");
+        printf("  mt <script>           Run a script\n");
+        printf("  mt <script> [args]    Run a script with arguments\n");
+        printf("  mt list               List available scripts\n");
+        printf("  mt help               Show this help\n\n");
+        return 0;
+    }
+
+    char *script_name = argv[1];
+    char **script_args = (argc > 2) ? &argv[2] : NULL;
+    int arg_count = (argc > 2) ? argc - 2 : 0;
+
+    int result = find_and_run_script(&mt, script_name, script_args, arg_count);
+    if (result != 0) {
+        fprintf(stderr, "Failed to run script '%s'\n", script_name);
+    }
+    return result;
+}
