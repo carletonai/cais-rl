@@ -60,7 +60,65 @@ int find_repo_root(char *repo_root) {
     return 0;
 }
 
-int load_projects_config(MT *mt);
+int load_projects_config(MT *mt) {
+    char project_config_path[MAX_PATH_LEN];
+    snprintf(project_config_path, sizeof(project_config_path),
+             "%s/.mt/projects.yml", mt->repo_root);
+
+    FILE *file = fopen(project_config_path, "r");
+    if (!file) {
+        fprintf(stderr, "Could not find %s\n", project_config_path);
+        return 0;
+    }
+
+    char line[512];
+    int in_projects = 0;
+    mt->project_count = 0;
+
+    while (fgets(line, sizeof(line), file) &&
+           mt->project_count < MAX_PROJECTS) {
+        line[strcspn(line, "\n")] = 0;
+
+        if (strlen(line) == 0 || line[0] == '#') {
+            continue;
+        }
+
+        if (strstr(line, "projects:")) {
+            in_projects = 1;
+            continue;
+        }
+
+        if (in_projects && line[0] == ' ') {
+            char *colon = strchr(line, ':');
+            if (!colon) continue;
+
+            char *name_start = line;
+            while (*name_start == ' ') name_start++;
+
+            int name_len = colon - name_start;
+            if (name_len >= MAX_NAME_LEN || name_len <= 0) continue;
+
+            strncpy(mt->projects[mt->project_count].name, name_start, name_len);
+            mt->projects[mt->project_count].name[name_len] = '\0';
+
+            char *path_start = colon + 1;
+            while (*path_start == ' ') path_start++;
+
+            int path_len = strlen(path_start);
+            if (path_len >= MAX_PATH_LEN || path_len <= 0) continue;
+
+            strncpy(mt->projects[mt->project_count].path, path_start, path_len);
+            mt->projects[mt->project_count].path[path_len] = '\0';
+
+            mt->project_count++;
+        } else if (in_projects && line[0] != ' ' && line[0] != '\t') {
+            break;
+        }
+    }
+
+    fclose(file);
+    return mt->project_count > 0;
+}
 
 int which_project(MT *mt, char *project_name) {
     char cwd[MAX_PATH_LEN];
