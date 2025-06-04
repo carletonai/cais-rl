@@ -360,7 +360,6 @@ void describe_scripts(MT *mt) {
     int found_any = 0;
 
     printf("Available Scripts:\n");
-    printf("==================\n\n");
 
     if (which_project(mt, current_project) == 0) {
         printf("Project '%s' scripts:\n", current_project);
