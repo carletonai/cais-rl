@@ -1,0 +1,2 @@
+scripts:
+  install: "Auto-detects project dependencies and installs them using the appropriate package manager (conda or pip)"
