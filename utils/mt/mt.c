@@ -214,6 +214,7 @@ int find_and_run_script(MT *mt, const char *script_name, char **script_args,
         }
         exec_args[arg_count + 1] = NULL;
         execv(found_script, exec_args);
+        free(exec_args);  // Free in case execv fails
         perror("execv failed");
         exit(1);
     } else if (pid > 0) {
