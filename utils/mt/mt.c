@@ -180,7 +180,7 @@ int find_and_run_script(MT *mt, const char *script_name, char **script_args,
                 snprintf(project_path, sizeof(project_path), "%s/%s",
                          mt->repo_root, mt->projects[i].path);
 
-                snprintf(scripts_dir, sizeof(scripts_dir), "%s/.scripts",
+                snprintf(scripts_dir, sizeof(scripts_dir), "%s/.mt/scripts",
                          project_path);
                 found_script = find_script_in_dir(scripts_dir, script_name);
                 if (found_script) {
@@ -192,7 +192,7 @@ int find_and_run_script(MT *mt, const char *script_name, char **script_args,
 
     // try the root .scripts folder
     if (!found_script) {
-        snprintf(scripts_dir, sizeof(scripts_dir), "%s/.scripts",
+        snprintf(scripts_dir, sizeof(scripts_dir), "%s/.mt/scripts",
                  mt->repo_root);
         found_script = find_script_in_dir(scripts_dir, script_name);
     }
@@ -241,7 +241,7 @@ void list_scripts(MT *mt) {
                 char project_path[MAX_PATH_LEN];
                 snprintf(project_path, sizeof(project_path), "%s/%s",
                          mt->repo_root, mt->projects[i].path);
-                snprintf(scripts_dir, sizeof(scripts_dir), "%s/.scripts",
+                snprintf(scripts_dir, sizeof(scripts_dir), "%s/.mt/scripts",
                          project_path);
 
                 dir = opendir(scripts_dir);
@@ -266,7 +266,7 @@ void list_scripts(MT *mt) {
     }
 
     printf("Root scripts:\n");
-    snprintf(scripts_dir, sizeof(scripts_dir), "%s/.scripts", mt->repo_root);
+    snprintf(scripts_dir, sizeof(scripts_dir), "%s/.mt/scripts", mt->repo_root);
     dir = opendir(scripts_dir);
     if (dir) {
         while ((entry = readdir(dir)) != NULL) {
