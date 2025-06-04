@@ -359,8 +359,6 @@ void describe_scripts(MT *mt) {
     struct dirent *entry;
     int found_any = 0;
 
-    printf("Available Scripts:\n");
-
     if (which_project(mt, current_project) == 0) {
         printf("Project '%s' scripts:\n", current_project);
 
