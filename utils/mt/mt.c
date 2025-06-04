@@ -121,7 +121,7 @@ int load_projects_config(MT *mt) {
 }
 
 int mt_init(MT *mt) {
-    if (!find_repo_root(mt->repo_root)) {
+    if (find_repo_root(mt->repo_root) != 0) {
         fprintf(stderr, "Not in a git repository \n");
         return 1;
     }
@@ -292,7 +292,7 @@ void list_scripts(MT *mt) {
 int main(int argc, char *argv[]) {
     MT mt;
 
-    if (!mt_init(&mt)) {
+    if (mt_init(&mt) != 0) {
         return 1;
     }
 
@@ -305,6 +305,12 @@ int main(int argc, char *argv[]) {
     // list command to list scripts
     if (strcmp(argv[1], "list") == 0 || strcmp(argv[1], "ls") == 0) {
         list_scripts(&mt);
+        return 0;
+    }
+
+    if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+        printf("mt - Multi-Tool for cais-rl\n");
+        printf("Version: 0.0.1\n");
         return 0;
     }
 
