@@ -227,6 +227,68 @@ int find_and_run_script(MT *mt, const char *script_name, char **script_args,
     }
 }
 
+void list_scripts(MT *mt) {
+    char current_project[MAX_NAME_LEN];
+    char scripts_dir[MAX_PATH_LEN];
+    DIR *dir;
+    struct dirent *entry;
+    int found_any = 0;
+
+    if (which_project(mt, current_project) == 0) {
+        printf("Scripts in project '%s':\n", current_project);
+
+        for (int i = 0; i < mt->project_count; i++) {
+            if (strcmp(mt->projects[i].name, current_project) == 0) {
+                char project_path[MAX_PATH_LEN];
+                snprintf(project_path, sizeof(project_path), "%s/%s",
+                         mt->repo_root, mt->projects[i].path);
+                snprintf(scripts_dir, sizeof(scripts_dir), "%s/.scripts",
+                         project_path);
+
+                dir = opendir(scripts_dir);
+                if (dir) {
+                    while ((entry = readdir(dir)) != NULL) {
+                        if (entry->d_name[0] != '.') {
+                            char script_path[MAX_PATH_LEN];
+                            snprintf(script_path, sizeof(script_path), "%s/%s",
+                                     scripts_dir, entry->d_name);
+                            if (access(script_path, X_OK) == 0) {
+                                printf("  %s\n", entry->d_name);
+                                found_any = 1;
+                            }
+                        }
+                    }
+                    closedir(dir);
+                }
+                break;
+            }
+        }
+        printf("\n");
+    }
+
+    printf("Root scripts:\n");
+    snprintf(scripts_dir, sizeof(scripts_dir), "%s/.scripts", mt->repo_root);
+    dir = opendir(scripts_dir);
+    if (dir) {
+        while ((entry = readdir(dir)) != NULL) {
+            if (entry->d_name[0] != '.') {
+                char script_path[MAX_PATH_LEN];
+                snprintf(script_path, sizeof(script_path), "%s/%s", scripts_dir,
+                         entry->d_name);
+                if (access(script_path, X_OK) == 0) {
+                    printf("  %s\n", entry->d_name);
+                    found_any = 1;
+                }
+            }
+        }
+        closedir(dir);
+    }
+
+    if (!found_any) {
+        printf("No executable scripts found.\n");
+    }
+}
+
 int main(int argc, char *argv[]) {
     MT mt;
 
