@@ -1,10 +1,16 @@
-name: CI
+name: MuZero CI
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'agents/muzero/**'
+      - '.github/workflows/muzero-ci.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'agents/muzero/**'
+      - '.github/workflows/muzero-ci.yml'
 
 jobs:
   check:
@@ -23,6 +29,7 @@ jobs:
     
     - name: Install dependencies
       run: |
+        cd agents/muzero
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov pylint black mypy
@@ -30,23 +37,27 @@ jobs:
     
     - name: Lint with pylint
       run: |
+        cd agents/muzero
         pylint --rcfile=setup.cfg muzero/
     
     - name: Check formatting with black
       run: |
+        cd agents/muzero
         black . --check
     
     - name: Type check with mypy
       run: |
+        cd agents/muzero
         mypy .
     
     - name: Run tests with coverage
       run: |
+        cd agents/muzero
         pytest --cov=./ --cov-report=term-missing --cov-report=html
     
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
-        path: htmlcov/
+        name: muzero-coverage-report
+        path: agents/muzero/htmlcov/
         retention-days: 14 
