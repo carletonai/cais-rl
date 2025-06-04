@@ -57,7 +57,7 @@ int find_repo_root(char *repo_root) {
         }
     }
 
-    return 0;
+    return -1;
 }
 
 int load_projects_config(MT *mt) {
@@ -96,7 +96,7 @@ int load_projects_config(MT *mt) {
             while (*name_start == ' ') name_start++;
 
             int name_len = colon - name_start;
-            if (name_len >= MAX_NAME_LEN || name_len <= 0) continue;
+            if (name_len >= MAX_NAME_LEN - 1 || name_len <= 0) continue;
 
             strncpy(mt->projects[mt->project_count].name, name_start, name_len);
             mt->projects[mt->project_count].name[name_len] = '\0';
@@ -105,7 +105,7 @@ int load_projects_config(MT *mt) {
             while (*path_start == ' ') path_start++;
 
             int path_len = strlen(path_start);
-            if (path_len >= MAX_PATH_LEN || path_len <= 0) continue;
+            if (path_len >= MAX_PATH_LEN - 1 || path_len <= 0) continue;
 
             strncpy(mt->projects[mt->project_count].path, path_start, path_len);
             mt->projects[mt->project_count].path[path_len] = '\0';
