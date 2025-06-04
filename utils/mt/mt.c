@@ -59,3 +59,22 @@ int find_repo_root(char *repo_root) {
 
     return 0;
 }
+
+int load_projects_config(MT *mt);
+
+int which_project(MT *mt) {}
+
+int find_script_in_project(MT *mt, const char *script_name, char *script_path) {
+}
+
+int find_script_in_repo(MT *mt, const char *script_name, char *script_path) {}
+
+int find_script(MT *mt, const char *script_name, char *script_path) {}
+
+int list_project_scripts(MT *mt) {}
+
+int run_script(MT *mt, const char *script_name) {}
+
+int run_script(MT *mt, const char *script_name) {}
+
+int get_project_path(MT *mt, const char *project_name, char *project_path) {}
