@@ -1,0 +1,4 @@
+# Projects configuration for mt (Multi-Tool)
+
+projects:
+  muzero: agents/muzero 

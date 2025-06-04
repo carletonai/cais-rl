@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "limits.h": "c",
+        "dirent.h": "c",
+        "stdlib.h": "c",
+        "stat.h": "c"
+    }
+}
