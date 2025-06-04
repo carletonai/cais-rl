@@ -62,7 +62,21 @@ int find_repo_root(char *repo_root) {
 
 int load_projects_config(MT *mt);
 
-int which_project(MT *mt) {}
+int which_project(MT *mt, char *project_name) {
+    char cwd[MAX_PATH_LEN];
+    if (!getcwd(cwd, sizeof(cwd))) {
+        return -1;
+    }
+
+    for (int i = 0; i < mt->project_count; i++) {
+        if (strstr(cwd, mt->projects[i].path) != NULL) {
+            strcpy(project_name, mt->projects[i].name);
+            return 0;
+        }
+    }
+
+    return -1;
+}
 
 int find_script_in_project(MT *mt, const char *script_name, char *script_path) {
 }
