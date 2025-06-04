@@ -322,6 +322,7 @@ int main(int argc, char *argv[]) {
         printf("  mt <script>           Run a script\n");
         printf("  mt <script> [args]    Run a script with arguments\n");
         printf("  mt list               List available scripts\n");
+        printf("  mt --version          Show version\n");
         printf("  mt help               Show this help\n\n");
         return 0;
     }
