@@ -150,20 +150,81 @@ int which_project(MT *mt, char *project_name) {
     return -1;
 }
 
-int find_script_in_project(MT *mt, const char *script_name, char *script_path) {
+char *find_script_in_dir(const char *dir_path, const char *script_name) {
+    static char script_path[MAX_PATH_LEN];
+    const char *extensions[] = {"", ".sh", NULL};
+
+    for (int i = 0; extensions[i] != NULL; i++) {
+        snprintf(script_path, sizeof(script_path), "%s/%s%s", dir_path,
+                 script_name, extensions[i]);
+
+        if (access(script_path, F_OK) == 0 && access(script_path, X_OK) == 0) {
+            return script_path;
+        }
+    }
+
+    return NULL;
 }
 
-int find_script_in_repo(MT *mt, const char *script_name, char *script_path) {}
+int find_and_run_script(MT *mt, const char *script_name, char **script_args,
+                        int arg_count) {
+    char current_project[MAX_NAME_LEN];
+    char scripts_dir[MAX_PATH_LEN];
+    char script_path[MAX_PATH_LEN];
+    char *found_script = NULL;
 
-int find_script(MT *mt, const char *script_name, char *script_path) {}
+    // try to find the script in the current project
+    if (which_project(mt, current_project) == 0) {
+        char project_path[MAX_PATH_LEN];
+        for (int i = 0; i < mt->project_count; i++) {
+            if (strcmp(mt->projects[i].name, current_project) == 0) {
+                snprintf(project_path, sizeof(project_path), "%s/%s",
+                         mt->repo_root, mt->projects[i].path);
 
-int list_project_scripts(MT *mt) {}
+                snprintf(scripts_dir, sizeof(scripts_dir), "%s/.scripts",
+                         project_path);
+                found_script = find_script_in_dir(scripts_dir, script_name);
+                if (found_script) {
+                    break;
+                }
+            }
+        }
+    }
 
-int run_script(MT *mt, const char *script_name) {}
+    // try the root .scripts folder
+    if (!found_script) {
+        snprintf(scripts_dir, sizeof(scripts_dir), "%s/.scripts",
+                 mt->repo_root);
+        found_script = find_script_in_dir(scripts_dir, script_name);
+    }
 
-int run_script(MT *mt, const char *script_name) {}
+    if (!found_script) {
+        fprintf(stderr,
+                "Script '%s' not found in project scripts or root scripts\n",
+                script_name);
+        return 1;
+    }
 
-int get_project_path(MT *mt, const char *project_name, char *project_path) {}
+    pid_t pid = fork();
+    if (pid == 0) {
+        char **exec_args = malloc((arg_count + 2) * sizeof(char *));
+        exec_args[0] = found_script;
+        for (int i = 0; i < arg_count; i++) {
+            exec_args[i + 1] = script_args[i];
+        }
+        exec_args[arg_count + 1] = NULL;
+        execv(found_script, exec_args);
+        perror("execv failed");
+        exit(1);
+    } else if (pid > 0) {
+        int status;
+        waitpid(pid, &status, 0);
+        return WEXITSTATUS(status);
+    } else {
+        perror("fork failed");
+        return 1;
+    }
+}
 
 int main(int argc, char *argv[]) {
     MT mt;
